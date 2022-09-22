@@ -16,12 +16,7 @@ class QuestionPage extends StatefulWidget {
 }
 
 class _QuestionPageState extends State<QuestionPage> {
-  List<bool> selected = [
-    false,
-    false,
-    false,
-    false,
-  ];
+  int itemSelected = -1;
   List<String> items = [
     'A',
     'B',
@@ -143,7 +138,8 @@ class _QuestionPageState extends State<QuestionPage> {
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               childCount: 4,
-              (context, index) => _listTile(index, answers[index]),
+              (context, index) =>
+                  _listTile(index, itemSelected, answers[index]),
             ),
           ),
         ),
@@ -165,9 +161,8 @@ class _QuestionPageState extends State<QuestionPage> {
                       //get pre question's answer
                       getAnswers(questionList!);
 
-                      for (var i = 0; i < 4; i++) {
-                        selected[i] = false;
-                      }
+                      //reset listTile selected
+                      this.itemSelected = -1;
                     });
                   },
                   child: Text('Pre'),
@@ -195,9 +190,8 @@ class _QuestionPageState extends State<QuestionPage> {
 
                       choosenAnswer = '';
 
-                      for (var i = 0; i < 4; i++) {
-                        selected[i] = false;
-                      }
+                      //reset listTile selected
+                      this.itemSelected = -1;
                     });
                   },
                   child: Text(currentQuestion == 19 ? 'Finish' : 'Next'),
@@ -237,7 +231,8 @@ class _QuestionPageState extends State<QuestionPage> {
             style: Theme.of(context).textTheme.headline1,
           ),
           Spacer(),
-          ...List.generate(4, (index) => _listTile(index, answers[index])),
+          ...List.generate(
+              4, (index) => _listTile(index, itemSelected, answers[index])),
           Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -257,9 +252,7 @@ class _QuestionPageState extends State<QuestionPage> {
                     getAnswers(questionList!);
 
                     //reset choosen TileList
-                    for (var i = 0; i < 4; i++) {
-                      selected[i] = false;
-                    }
+                    this.itemSelected = -1;
                   });
                 },
                 child: Text('Pre'),
@@ -290,9 +283,7 @@ class _QuestionPageState extends State<QuestionPage> {
                     choosenAnswer = '';
 
                     //reset choosen TileList
-                    for (var i = 0; i < 4; i++) {
-                      selected[i] = false;
-                    }
+                    this.itemSelected = -1;
                   });
                 },
                 child: Text(currentQuestion == 19 ? 'Finish' : 'Next'),
@@ -304,7 +295,7 @@ class _QuestionPageState extends State<QuestionPage> {
     );
   }
 
-  Widget _listTile(int i, String title) {
+  Widget _listTile(int index, int itemSelected, String title) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5),
       child: Material(
@@ -315,16 +306,13 @@ class _QuestionPageState extends State<QuestionPage> {
           onTap: () {
             setState(() {
               //update selected ListTile
-              for (var i = 0; i < 4; i++) {
-                selected[i] = false;
-              }
-              selected[i] = true;
+              this.itemSelected = index;
 
               //save choosen answer
               choosenAnswer = title;
             });
           },
-          selected: selected[i],
+          selected: index == itemSelected ? true : false,
           title: Text(
             title,
             style: TextStyle(
@@ -344,7 +332,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 shape: BoxShape.circle,
               ),
               child: Text(
-                items[i],
+                items[index],
                 style: TextStyle(
                   color: Constants.white,
                   fontSize: 30,
